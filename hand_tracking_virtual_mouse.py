@@ -4,6 +4,8 @@ from cvzone.HandTrackingModule import HandDetector
 import numpy as np
 from time import sleep
 from pynput.keyboard import Controller
+import time
+
 cap = cv2.VideoCapture(0)
 
 
@@ -39,6 +41,9 @@ for i in range(len(keys)):
     for j, key in enumerate(keys[i]):
         buttonList.append(Button([110*j+70, 100*i+50], key))
 
+prev_frame_time = 0
+new_frame_time = 0
+
 while cap.isOpened():
     ret, frame = cap.read()
     frame = cv2.flip(frame, 1)
@@ -65,10 +70,14 @@ while cap.isOpened():
 
                     sonuc += button.text
                     sleep(0.2)
-
+    new_frame_time = time.time()
+    fps = 1/(new_frame_time-prev_frame_time)
+    prev_frame_time = new_frame_time
 
     cv2.rectangle(img, (60,350), (750,450), (232, 162, 0), 2, cv2.LINE_AA) 
     cv2.putText(img, sonuc, (60,430), cv2.FONT_HERSHEY_SIMPLEX, 3, (0, 255, 255), 3)
+    cv2.putText(img, 'FPS: {0:.2f}'.format(fps), (1100, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,255,0),2, cv2.LINE_AA)
+    cv2.putText(img, 'KIRCI ROBOTICS', (30,700), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,255,255),2,cv2.LINE_AA)
 
     cv2.imshow('Sanal Klavye', frame)
 
